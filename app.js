@@ -1,10 +1,12 @@
 // canvas : 영역안의 pixel을 다루는 기능
+// pixel은 image를 만드므로 저장과 다운로드도 따라옴.
 const canvas = document.getElementById("jsCanvas");
 // context는 canvas안의 pixel을 control하는 요소(객체)
 const ctx = canvas.getContext("2d");
 const colors = document.getElementsByClassName("jsColor");
 const range = document.getElementById("jsRange");
 const mode = document.getElementById("jsMode");
+const save = document.getElementById("jsSave")
 
 const INITIAL_COLOR = "#2c2c2c";
 const CANVAS_SIZE = 700;
@@ -18,6 +20,8 @@ let painting = false;
 let filling = false;
 
 // canvas, context객체 관련 정보는 mdn검색하면 다나옴
+ctx.fillStyle = "white";
+ctx.fillRect(0,0,CANVAS_SIZE,CANVAS_SIZE);
 ctx.strokeStyle = INITIAL_COLOR;
 ctx.fillStyle = INITIAL_COLOR;
 ctx.lineWidth = 2.5;
@@ -79,9 +83,31 @@ function handleModeClick(event){
 function handleCanvasClick(){
   if(filling){
     ctx.fillRect(0,0,CANVAS_SIZE,CANVAS_SIZE)
-
   }
 }
+
+function handleCM(event){
+  // console.log(event);
+  // 캔버스 안에서 마우스오른쪽 클릭 방지
+  event.preventDefault();
+}
+
+function handleSaveClick(){
+  const image = canvas.toDataURL("image/jpeg");
+  // URL주소 지우면 기본 png로 저장됨.
+  const link = document.createElement("a");
+  // download는 a태그의 attribute =>> <a href같이 <a download이렇게 씀.
+  // 위에줄 취소하고 href에 URL넣는거 맞고 download는 이름을 명시하는 attribute
+  // 즉 <a href="URL" download= "name"> 형식을 가짐.
+  // 브라우저에게 이 주소로 링크해 가는대신 URL을 다운로드하라고 지시하는 attribute
+  link.href = image;
+  link.download = "PaintJS_MADE_BY_ME";
+  // console.log(image);
+  // console.log(link);
+  // click을 거짓으로 만듦
+  link.click();
+}
+
 
 if (canvas) {
   canvas.addEventListener("mousemove", onMouseMove);
@@ -89,6 +115,7 @@ if (canvas) {
   canvas.addEventListener("mouseup", stopPainting);
   canvas.addEventListener("mouseleave", stopPainting);
   canvas.addEventListener("click", handleCanvasClick);
+  canvas.addEventListener("contextmenu", handleCM);
 }
 
 // console.log(Array.from(colors));
@@ -102,4 +129,8 @@ if(range){
 
 if(mode){
   mode.addEventListener("click", handleModeClick)
+}
+
+if(saveBtn){
+  saveBtn.addEventListener("click", handleSaveClick)
 }
